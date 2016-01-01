@@ -11,12 +11,11 @@
 using namespace std;
 #endif
 
-#define POINTS 600000 //max is 2^(8*(sizeof(unsigned int) = 4)) = 4294967296
-#define PERIOD 1000
+#define POINTS 300000 //max is 2^(8*(sizeof(unsigned int) = 4)) = 4294967296
+#define PERIOD 200
 #define MODE 0 //Mode 0: Flush data to file at every datapoint; Mode 1: Flush data to file after POINTS datapoints
 #define LEDPIN  17 //Status LED Broadcom pin number (pulled low)
 
-short int z;
 int fd;
 unsigned int i, starttime;
 char tm[12], filename[30];
@@ -35,20 +34,13 @@ int setup() {
         printf("Could not start\n");
         return 1;
     }
-  // enable all axes, normal mode
-    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL1, 0x07);
-  // 400Hz rate
-    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL1,(wiringPiI2CReadReg8(fd,LIS3DH_REG_CTRL1) & ~(0xF0)) | (LIS3DH_DATARATE_400_HZ << 4));
-  // High res & BDU enabled
-    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL4, 0x88);
   // DRDY on INT1
     wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL3, 0x10);
-  // Turn on orientation config
-    //wiringPiI2CWriteReg8(fd,LIS3DH_REG_PL_CFG, 0x40);
-  // enable adcs
-    wiringPiI2CWriteReg8(fd,LIS3DH_REG_TEMPCFG, 0x80);
-  //Set and display the g range for the accelerometer
-    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL4,(wiringPiI2CReadReg8(fd,LIS3DH_REG_CTRL4) & ~(0x30)) | (LIS3DH_RANGE_2_G << 4));
+  // BDU disabled, +-8G Range
+    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL4, 0x20);
+  // enable all axes, low power mode, 5kHz
+    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL1, 0x9C);
+  //Display the g range for the accelerometer
     printf("Range = %dG\n",2 << (lis3dh_range_t)((wiringPiI2CReadReg8(fd,LIS3DH_REG_CTRL4) >> 4) & 0x03));
     return 0;
 }
@@ -78,8 +70,7 @@ int loop() {
     for (i=0; i<POINTS; i++) {
         starttime += PERIOD;
         while(micros()<starttime);
-        z = wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_L) | ((unsigned short int)wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_H)) << 8;
-        fprintf(f, "%d,%d\n", micros(),  z);
+        fprintf(f, "%d,%d\n", micros(), (signed char)wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_H));
     }
     fclose(f);
     return 0;
