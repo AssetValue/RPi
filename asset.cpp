@@ -1,6 +1,7 @@
 #ifdef RPI
 #include <stdio.h>
 #include <iostream>
+//#include <csignal>
 #include <time.h>
 #include <string.h>
 #include <wiringPi.h>
@@ -11,7 +12,7 @@ using namespace std;
 #endif
 
 #define POINTS 600000 //max is 2^(8*(sizeof(unsigned int) = 4)) = 4294967296
-#define PERIOD 100
+#define PERIOD 1000
 #define MODE 0 //Mode 0: Flush data to file at every datapoint; Mode 1: Flush data to file after POINTS datapoints
 #define LEDPIN  17 //Status LED Broadcom pin number (pulled low)
 
@@ -19,8 +20,11 @@ short int z;
 int fd;
 unsigned int i, starttime;
 char tm[12], filename[30];
+//sig_atomic_t sigflag;
 
 int setup() {
+//    sigflag = 1;
+    filename[0]='\0';
   //Setup WiringPi GPIO
     wiringPiSetupGpio();
     pinMode(LEDPIN, OUTPUT);
@@ -28,8 +32,8 @@ int setup() {
     fd = wiringPiI2CSetup(LIS3DH_DEFAULT_ADDRESS);
   //Check for LIS3DH device
     if (wiringPiI2CReadReg8(fd,LIS3DH_REG_WHOAMI) != 0x33) {
-      printf("Could not start\n");
-      return 1;
+        printf("Could not start\n");
+        return 1;
     }
   // enable all axes, normal mode
     wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL1, 0x07);
@@ -62,33 +66,46 @@ int loop() {
   //Create a file to write to
     FILE *f = fopen(filename, "a");
     if (f == NULL) {
-      printf("Error opening file!\n");
-      return 1;
+        printf("Error opening file!\n");
+        return 1;
     }
 
   //Set up file header
-    fprintf(f, "time,time,z\n");
+    fprintf(f, "time,z\n");
 
   //Collect and write data points
     starttime = micros();
     for (i=0; i<POINTS; i++) {
-      starttime += PERIOD;
-      while(micros()<starttime);
-      z = wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_L) | ((unsigned short int)wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_H)) << 8;
-      fprintf(f, "%d,%d\n", micros(),  z);
+        starttime += PERIOD;
+        while(micros()<starttime);
+        z = wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_L) | ((unsigned short int)wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_H)) << 8;
+        fprintf(f, "%d,%d\n", micros(),  z);
     }
     fclose(f);
     return 0;
 }
 
 #ifdef RPI
+//void sighandler(int s)
+//{
+//    sigflag = 1;
+//}
+//
+int cleanup() {
+    digitalWrite(LEDPIN, LOW);
+    printf("Done!\n");
+    return 0;
+}
+
 int main() {
     
+//    signal(SIGINT, sighandler);
     if (setup()) return 1;
+//    while(sigflag) {
     while(1) {
-      printf("Loop\n");
       if (loop()) return 1;
     }
+    if (cleanup()) return 1;
     return 0;
 }
 #endif
