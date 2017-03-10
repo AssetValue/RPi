@@ -1,0 +1,8 @@
+#!/bin/bash
+apt-get update
+apt-get upgrade
+apt-get install git-core
+cd
+git clone git://git.drogon.net/wiringPi
+cd wiringPi
+./build

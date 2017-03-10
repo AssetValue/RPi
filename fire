@@ -1,0 +1,6 @@
+#!/bin/bash
+vim asset.cpp
+g++ asset.cpp -lwiringPi -o ~/asset
+echo "========"
+cd
+./asset
