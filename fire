@@ -1,6 +1,6 @@
 #!/bin/bash
 vim asset.cpp
-g++ asset.cpp -lwiringPi -o ~/asset
+g++ asset.cpp -DRPI -lwiringPi -o /usr/local/bin/asset
 echo "========"
 cd
-./asset
+/usr/local/bin/asset
