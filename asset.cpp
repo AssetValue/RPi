@@ -16,7 +16,7 @@ using namespace std;
     short int z;
     int fd;
     unsigned int i;
-    char tm[11], filename[30];
+    char tm[12], filename[30];
     clock_t startclock;
 
 int setup() {
@@ -47,7 +47,7 @@ int setup() {
 int loop() {
   //Create and display filename
     sprintf(tm, "%lu", (unsigned long)time(NULL));
-    strcpy(filename, "data/assetData");
+    strcpy(filename, "/data/assetData");
     strcat(filename, tm);
     strcat(filename, ".csv");
     printf("%s\n", filename);
