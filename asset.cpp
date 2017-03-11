@@ -42,6 +42,7 @@ int setup() {
   //Set and display the g range for the accelerometer
     wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL4,(wiringPiI2CReadReg8(fd,LIS3DH_REG_CTRL4) & ~(0x30)) | (LIS3DH_RANGE_2_G << 4));
     printf("Range = %dG\n",2 << (lis3dh_range_t)((wiringPiI2CReadReg8(fd,LIS3DH_REG_CTRL4) >> 4) & 0x03));
+    return 0;
 }
 
 int loop() {
@@ -71,13 +72,17 @@ int loop() {
       fprintf(f, "%d,%d\n", i*PERIOD,  z);
     }
     fclose(f);
+    return 0;
 }
 
 #ifdef RPI
 int main() {
     
     if (setup()) return 1;
-    while(1) if (loop()) return 1;
+    while(1) {
+      printf("Loop\n");
+      if (loop()) return 1;
+    }
     return 0;
 }
 #endif
