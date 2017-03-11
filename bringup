@@ -13,8 +13,8 @@ cd wiringPi
 
 echo "Install AssetCode"
 cd /home/pi
-git clone https://github.com/dimitdim/assetValue.git
-cd assetValue
+git clone https://github.com/AssetValue/RPi assetCode
+cd assetCode
 g++ asset.cpp -DRPI -lwiringPi -o /usr/local/bin/asset
 cp rc.local /etc/rc.local
 

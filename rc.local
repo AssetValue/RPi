@@ -7,7 +7,7 @@ _IP=$(hostname -I) || true
 if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
   echo "Checking For New Code Version"
-  cd /root/assetValue
+  cd /root/assetCode
   git pull | grep -q 'Already up-to-date.'
   if [ $? -eq 0 ]; then
     echo "Already up-to-date."
