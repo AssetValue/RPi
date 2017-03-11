@@ -2,7 +2,14 @@
 apt-get update
 apt-get upgrade
 apt-get install git-core
+apt-get install i2c-tools libi2c-dev python-smbus
+
 cd
 git clone git://git.drogon.net/wiringPi
 cd wiringPi
 ./build
+
+cd
+git clone https://github.com/dimitdim/assetValue.git
+cd assetValue
+g++ asset.cpp -DRPI -lwiringPi -o /usr/local/bin/asset
