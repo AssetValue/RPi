@@ -1,15 +1,21 @@
 #!/bin/bash
+echo "Update Apt-Get and Install Software"
 apt-get update
 apt-get upgrade
 apt-get install git-core
 apt-get install i2c-tools libi2c-dev python-smbus
 
+echo "Install WiringPi"
 cd /home/pi
 git clone git://git.drogon.net/wiringPi
 cd wiringPi
 ./build
 
+echo "Install AssetCode"
 cd /home/pi
 git clone https://github.com/dimitdim/assetValue.git
 cd assetValue
 g++ asset.cpp -DRPI -lwiringPi -o /usr/local/bin/asset
+cp rc.local /etc/rc.local
+
+shutdown -r now
