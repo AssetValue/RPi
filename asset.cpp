@@ -13,7 +13,7 @@ using namespace std;
 #define PERIOD 100
 #define MODE 0 //Mode 0: Flush data to file at every datapoint; Mode 1: Flush data to file after POINTS datapoints
 
-void setup() {
+int setup() {
   //Setup WiringPi I2C
     fd = wiringPiI2CSetup(LIS3DH_DEFAULT_ADDRESS);
   //Check for LIS3DH device
@@ -38,7 +38,7 @@ void setup() {
     printf("Range = %dG\n",2 << (lis3dh_range_t)((wiringPiI2CReadReg8(fd,LIS3DH_REG_CTRL4) >> 4) & 0x03));
 }
 
-void loop() {
+int loop() {
   //Create and display filename
     sprintf(tm, "%lu", (unsigned long)time(NULL));
     strcpy(filename, "data/assetData");
@@ -75,8 +75,8 @@ int main() {
     char tm[11], filename[30];
     clock_t startclock;
     
-    setup();
-    while(1) loop();
+    if setup() return 1;
+    while(1) if loop() return 1;
     return 0;
 }
 #endif
