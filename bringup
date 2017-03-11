@@ -7,13 +7,13 @@ apt-get install i2c-tools libi2c-dev python-smbus
 
 echo "Install WiringPi"
 cd /home/pi
-git clone git://git.drogon.net/wiringPi
+sudo -u pi git clone git://git.drogon.net/wiringPi
 cd wiringPi
 ./build
 
 echo "Install AssetCode"
 cd /home/pi
-git clone https://github.com/AssetValue/RPi assetCode
+sudo -u pi git clone https://github.com/AssetValue/RPi assetCode
 cd assetCode
 g++ asset.cpp -DRPI -lwiringPi -o /usr/local/bin/asset
 cp rc.local /etc/rc.local
