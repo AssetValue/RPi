@@ -76,8 +76,8 @@ int loop() {
 #ifdef RPI
 int main() {
     
-    if setup() return 1;
-    while(1) if loop() return 1;
+    if (setup()) return 1;
+    while(1) if (loop()) return 1;
     return 0;
 }
 #endif
