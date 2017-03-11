@@ -13,6 +13,12 @@ using namespace std;
 #define PERIOD 100
 #define MODE 0 //Mode 0: Flush data to file at every datapoint; Mode 1: Flush data to file after POINTS datapoints
 
+    short int z;
+    int fd;
+    unsigned int i;
+    char tm[11], filename[30];
+    clock_t startclock;
+
 int setup() {
   //Setup WiringPi I2C
     fd = wiringPiI2CSetup(LIS3DH_DEFAULT_ADDRESS);
@@ -69,11 +75,6 @@ int loop() {
 
 #ifdef RPI
 int main() {
-    short int z;
-    int fd;
-    unsigned int i;
-    char tm[11], filename[30];
-    clock_t startclock;
     
     if setup() return 1;
     while(1) if loop() return 1;
