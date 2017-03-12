@@ -2,5 +2,4 @@
 vim asset.cpp
 g++ asset.cpp -DRPI -lwiringPi -o /usr/local/bin/asset
 echo "========"
-cd
 /usr/local/bin/asset
