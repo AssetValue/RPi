@@ -3,6 +3,7 @@
 #include <iostream>
 #include <time.h>
 #include <string.h>
+#include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include "Adafruit_LIS3DH.h"
 
@@ -12,14 +13,18 @@ using namespace std;
 #define POINTS 600000 //max is 2^(8*(sizeof(unsigned int) = 4)) = 4294967296
 #define PERIOD 100
 #define MODE 0 //Mode 0: Flush data to file at every datapoint; Mode 1: Flush data to file after POINTS datapoints
+#define LEDPIN  17 //Status LED Broadcom pin number (pulled low)
 
-    short int z;
-    int fd;
-    unsigned int i;
-    char tm[12], filename[30];
-    clock_t startclock;
+short int z;
+int fd;
+unsigned int i;
+char tm[12], filename[30];
+clock_t startclock;
 
 int setup() {
+  //Setup WiringPi GPIO
+    wiringPiSetupGpio();
+    pinMode(LEDPIN, OUTPUT);
   //Setup WiringPi I2C
     fd = wiringPiI2CSetup(LIS3DH_DEFAULT_ADDRESS);
   //Check for LIS3DH device
@@ -46,6 +51,8 @@ int setup() {
 }
 
 int loop() {
+  //Turn on status LED
+    digitalWrite(LEDPIN, HIGH);
   //Create and display filename
     sprintf(tm, "%lu", (unsigned long)time(NULL));
     strcpy(filename, "/data/assetData");
