@@ -17,9 +17,8 @@ using namespace std;
 
 short int z;
 int fd;
-unsigned int i;
+unsigned int i, starttime;
 char tm[12], filename[30];
-clock_t startclock;
 
 int setup() {
   //Setup WiringPi GPIO
@@ -71,12 +70,12 @@ int loop() {
     fprintf(f, "time,time,z\n");
 
   //Collect and write data points
-    startclock = clock();
+    starttime = micros();
     for (i=0; i<POINTS; i++) {
-      startclock += PERIOD;
-      while(clock()<startclock);
+      starttime += PERIOD;
+      while(micros()<starttime);
       z = wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_L) | ((unsigned short int)wiringPiI2CReadReg8(fd, LIS3DH_REG_OUT_Z_H)) << 8;
-      fprintf(f, "%d,%d\n", i*PERIOD,  z);
+      fprintf(f, "%d,%d\n", micros(),  z);
     }
     fclose(f);
     return 0;
