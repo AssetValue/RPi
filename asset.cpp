@@ -11,7 +11,7 @@
 using namespace std;
 #endif
 
-#define POINTS 300000 //max is 2^(8*(sizeof(unsigned int) = 4)) = 4294967296
+#define POINTS 4500000 //max is 2^(8*(sizeof(unsigned int) = 4)) = 4294967296
 #define PERIOD 200
 #define MODE 0 //Mode 0: Flush data to file at every datapoint; Mode 1: Flush data to file after POINTS datapoints
 #define LEDPIN  17 //Status LED Broadcom pin number (pulled low)
@@ -36,8 +36,8 @@ int setup() {
     }
   // DRDY on INT1
     wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL3, 0x10);
-  // BDU disabled, +-8G Range
-    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL4, 0x20);
+  // BDU disabled, +-4G Range
+    wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL4, 0x10);
   // enable all axes, low power mode, 5kHz
     wiringPiI2CWriteReg8(fd,LIS3DH_REG_CTRL1, 0x9C);
   //Display the g range for the accelerometer
